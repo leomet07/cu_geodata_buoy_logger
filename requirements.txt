@@ -1,0 +1,4 @@
+dnspython==2.8.0
+pymongo==4.16.0
+pyserial==3.5
+python-dotenv==1.2.2
