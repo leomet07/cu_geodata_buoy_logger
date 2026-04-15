@@ -5,13 +5,19 @@ import datetime
 import database_utils
 
 ports = serial.tools.list_ports.comports()
-for port in ports:
-    print(f"port: {port.device}, description: {port.description}")
 
+if len(ports) > 1:
+    raise Exception(
+        "Multiple serial devices are connected. Please make sure there is only one device connected, or hard-code which serial port is needed."
+    )
 
-# TODO: make this connected to the port above
+port = ports[0]
+print(f"port: {port.device}, description: {port.description}")
+print(type(port.device))
+CONNECTION_PORT = port.device or "/dev/ttyS0"
+
 ser = serial.Serial(
-    "/dev/ttyS0",
+    CONNECTION_PORT,
     19200,
     timeout=1,
     bytesize=serial.EIGHTBITS,
