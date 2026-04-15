@@ -73,7 +73,6 @@ def parse_payload_line(raw_line: str) -> Optional[Dict[str, object]]:
     line = raw_line.strip()
     # Split and remove empty fields created by the ETX replacement.
     parts = [p.strip() for p in line.split(",")]
-    parts = [p for p in parts if p != ""]
 
     # Expected payload after cleanup:
     # NODE,DIR,SPEED,CDIR,CSPEED,PRESS,RH,TEMP,DEWPOINT,GPSLOCATION,TIME,VOLT,STATUS,CHECK
