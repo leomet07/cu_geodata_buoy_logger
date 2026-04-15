@@ -67,6 +67,7 @@ def parse_payload_line(raw_line: str) -> Optional[Dict[str, object]]:
     Returns a dict suitable for CSV writing, or None if the line is not parseable.
     """
     if "Q," not in raw_line:
+        print("Q not in raw line")
         return None
 
     # Keep only the sensor payload onward, dropping any terminal prefix text.
@@ -80,8 +81,11 @@ def parse_payload_line(raw_line: str) -> Optional[Dict[str, object]]:
     parts = [p for p in parts if p != ""]
 
     # Expected payload after cleanup:
-    # Q,DIR,SPEED,CDIR,CSPEED,PRESS,RH,TEMP,DEWPOINT,GPSLOCATION,TIME,VOLT,STATUS,CHECK
+    # NODE,DIR,SPEED,CDIR,CSPEED,PRESS,RH,TEMP,DEWPOINT,GPSLOCATION,TIME,VOLT,STATUS,CHECK
+    # units:
+    # -,DEG,MS,DEG,MS,HPA,%,C,C,-,-,V,-,-
     if len(parts) < 14:
+        print("Not enough parts: ", len(parts))
         return None
 
     parts = parts[:14]
