@@ -70,12 +70,7 @@ def parse_payload_line(raw_line: str) -> Optional[Dict[str, object]]:
         print("Q not in raw line")
         return None
 
-    # Keep only the sensor payload onward, dropping any terminal prefix text.
-    line = raw_line[raw_line.find("Q,") :].strip()
-
-    # Replace ETX with a comma so checksum becomes its own field.
-    line = line.replace("\x03", ",")
-
+    line = raw_line.strip()
     # Split and remove empty fields created by the ETX replacement.
     parts = [p.strip() for p in line.split(",")]
     parts = [p for p in parts if p != ""]

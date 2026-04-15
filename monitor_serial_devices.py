@@ -23,8 +23,10 @@ while True:
     data = ser.readline()
     if data:
         line = data.decode(errors="ignore").strip()
-
+        print(line)
         parsed_line = parse_payload_line(line)  # dict, each key is a column
+        if parsed_line is None:
+            print("Could not parse line.")
         parsed_line["program_timestamp_utc"] = datetime.datetime.now(
             datetime.timezone.utc
         )
