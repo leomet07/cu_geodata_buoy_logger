@@ -23,14 +23,12 @@ while True:
     data = ser.readline()
     if data:
         line = data.decode(errors="ignore").strip()
-        print(line)
         parsed_line = parse_payload_line(line)  # dict, each key is a column
         if parsed_line is None:
-            print("Could not parse line.")
+            print(line, "Could not parse above line.\n")
         parsed_line["program_timestamp_utc"] = datetime.datetime.now(
             datetime.timezone.utc
         )
-        print(line, parsed_line)
 
         # upload to mongo
         database_utils.upload_data_entry_to_database(parsed_line)
