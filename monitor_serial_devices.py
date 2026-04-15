@@ -13,8 +13,9 @@ if len(ports) > 1:
 
 port = ports[0]
 print(f"port: {port.device}, description: {port.description}")
-print(type(port.device))
-CONNECTION_PORT = port.device or "/dev/ttyS0"
+CONNECTION_PORT = (
+    port.device or "/dev/ttyS0"
+)  # /dev/ttyS0 is raspi (linux) default serial port
 
 ser = serial.Serial(
     CONNECTION_PORT,
