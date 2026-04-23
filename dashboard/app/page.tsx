@@ -1,65 +1,67 @@
-import Image from "next/image";
+import { getRecentBuoyLogs } from '@/lib/data'
+import MetricCard from '@/components/MetricCard'
+import WindChart from '@/components/charts/WindChart'
+import TempHumidityChart from '@/components/charts/TempHumidityChart'
+import PressureChart from '@/components/charts/PressureChart'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function Home() {
+export default async function DashboardPage() {
+  const logs = await getRecentBuoyLogs(50)
+  const latest = logs[logs.length - 1]
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="p-6 max-w-7xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">Buoy Logger Dashboard</h1>
+        {latest && (
+          <p className="text-zinc-400 text-sm mt-1">
+            Node {latest.node_letter} · Last update:{' '}
+            {new Date(latest.program_timestamp_utc).toLocaleString()}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+        )}
+      </div>
+
+      {logs.length === 0 ? (
+        <p className="text-zinc-400">No data found in the database.</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <MetricCard title="Wind Speed" value={latest.wind_speed_m_s} unit="m/s" />
+            <MetricCard title="Temperature" value={latest.air_temperature_C} unit="°C" />
+            <MetricCard title="Humidity" value={latest.relative_humidity_percent} unit="%" />
+            <MetricCard title="Pressure" value={latest.pressure_hPa} unit="hPa" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-zinc-400">Wind Speed</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <WindChart data={logs} />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-zinc-400">Temperature & Humidity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TempHumidityChart data={logs} />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-900 border-zinc-800 md:col-span-2 xl:col-span-1">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-zinc-400">Atmospheric Pressure</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PressureChart data={logs} />
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
+    </main>
+  )
 }
